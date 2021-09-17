@@ -164,4 +164,3 @@ def encode_scale(df, scaler):
     test = test.drop(columns=num_cols)
     
     return train, validate, test
-
