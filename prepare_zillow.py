@@ -61,7 +61,38 @@ def plot_boxplots(df):
         sns.boxplot(y=col, data=df, color='green')
         plt.tight_layout()
         
+def clean_zillow(df):
+    '''
+    Take in df and eliminates all database key columns, further refines to only single unit properties, handles all nulls with various methods
+    '''
+    df = df.drop(columns=[col for col in df.columns.tolist() if col.endswith('id')])
+    df = df[(df.propertylandusedesc == 'Single Family Residential') | (df.propertylandusedesc == 'Mobile Home') \
+         | (df.propertylandusedesc == 'Manufactured, Modular, Prefabricated Homes')]
+    df = handle_missing_values(df)
+    df.calculatedfinishedsquarefeet = df.calculatedfinishedsquarefeet.fillna(df.calculatedfinishedsquarefeet.median())
+    df.lotsizesquarefeet = df.lotsizesquarefeet.fillna(df.lotsizesquarefeet.median())
+    df.propertyzoningdesc = df.propertyzoningdesc.fillna(df.propertyzoningdesc.mode().tolist()[0])
+    df.regionidcity = df.regionidcity.fillna(df.regionidcity.mode().tolist()[0])
+    df.unitcnt = df.unitcnt.fillna(1)
+    df.heatingorsystemdesc = df.heatingorsystemdesc.fillna('Central')
+    df = df.dropna()
+    df = df.drop(columns=['calculatedbathnbr', 'finishedsquarefeet12', 'fullbathcnt'])
+    return df
+    
+def handle_missing_values(df, prop_required_columns=0.5, prop_required_row=0.75):
+    '''
+    Takes in df and thresholds for null proportions in each column and row and returns df with only columns and rows below threshold
+    '''
+    threshold = int(round(prop_required_columns * len(df.index), 0))
+    df = df.dropna(axis=1, thresh=threshold)
+    threshold = int(round(prop_required_row * len(df.columns), 0))
+    df = df.dropna(axis=0, thresh=threshold)
+    return df
+        
 def remove_outliers(df):
+    '''
+    Removes outliers that are outside of 1.5*IQR
+    '''
     num_cols = df.select_dtypes('number').columns.tolist()
     for col in num_cols:
         Q1 = np.percentile(df[col], 25, interpolation='midpoint')
@@ -82,6 +113,9 @@ def split(df):
     return train, validate, test
 
 def encode_scale(df, scaler):
+    '''
+    Takes in df and scaler of your choosing and returns scaled df with unscaled columns dropped
+    '''
     cat_cols = df.select_dtypes('object').columns.tolist()
     df = pd.get_dummies(data=df, columns=cat_cols)
     train, validate, test = split(df)
