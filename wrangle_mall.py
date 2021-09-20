@@ -11,10 +11,6 @@ import os
 
 from sklearn.model_selection import train_test_split
 
-# ignore warnings
-import warnings
-warnings.filterwarnings("ignore")
-
 # custom imports
 from env import host, user, password
 

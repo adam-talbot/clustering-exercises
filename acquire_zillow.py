@@ -66,6 +66,6 @@ def get_zillow_data():
         df = new_zillow_sfr_data()
         
         # Write DataFrame to a csv file.
-        df.to_csv('zillow_sfr_df.csv')
+        # df.to_csv('zillow_sfr_df.csv')
         
     return df
