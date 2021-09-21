@@ -25,9 +25,9 @@ def clean_zillow(df):
 def split(df):
     '''
     This function takes in a df and splits it into train, validate, and test dfs
-    final proportions will be 60/20/20 for train/validate/test
+    final proportions will be 80/10/10 for train/validate/test
     '''
-    train, validate, test = p.split(df)
+    train, validate, test = p.split_80(df)
     return train, validate, test
 
 def encode_scale(df, scaler):
