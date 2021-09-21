@@ -26,13 +26,6 @@ def clean_zillow(df):
     Take in df and eliminates all database key columns, further refines to only single unit properties, handles all nulls with various methods
     '''
     return df = p.clean_zillow(df)
-    
-
-def remove_outliers(df):
-    '''
-    Removes outliers that are outside of 1.5*IQR
-    '''
-    return df = a.remove_outliers(df)
 
 def split(df):
     '''
