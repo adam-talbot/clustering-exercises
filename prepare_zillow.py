@@ -6,8 +6,6 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-import os
-
 from sklearn.model_selection import train_test_split
 
 def plot_distributions(df):
@@ -66,8 +64,8 @@ def clean_zillow(df):
     Take in df and eliminates all database key columns, further refines to only single unit properties, handles all nulls with various methods
     '''
     df = df.drop(columns=[col for col in df.columns.tolist() if col.endswith('id')]) # remove database table keys
-    df = df[(df.propertylandusedesc == 'Single Family Residential') | (df.propertylandusedesc == 'Mobile Home') \ # my way to filter to single-unit properties
-         | (df.propertylandusedesc == 'Manufactured, Modular, Prefabricated Homes')]
+    df = df[(df.propertylandusedesc == 'Single Family Residential') | (df.propertylandusedesc == 'Mobile Home') \
+         | (df.propertylandusedesc == 'Manufactured, Modular, Prefabricated Homes')] # my way to filter for single unit properties
     df = handle_missing_values(df) # remove columns based on thresholds for nulls
     df.calculatedfinishedsquarefeet = df.calculatedfinishedsquarefeet.fillna(df.calculatedfinishedsquarefeet.median()) # impute sf using median
     df.lotsizesquarefeet = df.lotsizesquarefeet.fillna(df.lotsizesquarefeet.median()) # impute lot sf using median
@@ -101,7 +99,6 @@ def clean_zillow(df):
     'longitude' : 'int',
     'lotsizesquarefeet' : 'int',
     'roomcnt' : 'int',
-    'unitcnt' : 'int',
     'yearbuilt' : 'int',
     'transactiondate' : 'datetime64'
                     }
@@ -109,7 +106,7 @@ def clean_zillow(df):
     df.transactiondate = df.transactiondate.dt.date # remove time from time date format, not needed
     cols_w_outliers = ['bathroomcnt', 'bedroomcnt', 'calculatedfinishedsquarefeet', 'lotsizesquarefeet', 'taxvaluedollarcnt'] # of remaining columns, these need outliers removed
     df = df = remove_outliers(df, cols_w_outliers) # call function to remove outliers using Tukey method
-    room_cnt_ratio = ((good_roomcnt_data.bathroomcnt + good_roomcnt_data.bedroomcnt) / good_roomcnt_data.roomcnt).median() # find ratio of beds + baths to roomcnt
+    room_cnt_ratio = 0.8333333333333334 # ratio of beds + baths to roomcnt present in data
     df.roomcnt[df.roomcnt < (df.bedroomcnt + df.bathroomcnt)] = round(df.bathroomcnt + df.bedroomcnt / room_cnt_ratio, 0).astype('int') # impute impossible roomcnt values using ratio from rest of dataset
     rename_dict = {
     'transactiondate' : 'sale_date',
